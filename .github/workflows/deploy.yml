@@ -1,0 +1,40 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+
+      - name: Add server host key
+        run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy on production server
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SECRET_KEY: ${{ secrets.AS_SECRET_KEY }}
+          DB_PASSWORD: ${{ secrets.AS_DB_PASSWORD }}
+          DB_ROOT_PASSWORD: ${{ secrets.AS_DB_ROOT_PASSWORD }}
+        run: |
+          ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_HOST} bash << ENDSSH
+          {
+            echo "SECRET_KEY=${SECRET_KEY}"
+            echo "DEBUG=False"
+            echo "DB_NAME=as_rezteche_db"
+            echo "DB_USER=as_rezteche_user"
+            echo "DB_PASSWORD=${DB_PASSWORD}"
+            echo "DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}"
+          } > /var/www/as-rezteche/.env
+          chmod +x /var/www/as-rezteche/deploy.sh
+          cd /var/www/as-rezteche
+          export $(cat .env | xargs)
+          bash /var/www/as-rezteche/deploy.sh
+          ENDSSH

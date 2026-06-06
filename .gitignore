@@ -1,0 +1,17 @@
+# Python
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/staticfiles/
+backend/.env
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Environment
+.env
+*.env
+
+# Docker
+docker-compose.override.yml

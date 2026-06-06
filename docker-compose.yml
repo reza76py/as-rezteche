@@ -1,0 +1,43 @@
+services:
+  as-frontend:
+    build: ./frontend
+    container_name: as-frontend
+    ports:
+      - "8503:80"
+    depends_on:
+      - as-backend
+    restart: unless-stopped
+
+  as-backend:
+    build: ./backend
+    container_name: as-backend
+    ports:
+      - "8003:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG:-False}
+      - DB_NAME=${DB_NAME:-as_rezteche_db}
+      - DB_USER=${DB_USER:-as_rezteche_user}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=as-db
+      - DB_PORT=3306
+    depends_on:
+      - as-db
+    restart: unless-stopped
+
+  as-db:
+    image: mysql:8.0
+    container_name: as-db
+    ports:
+      - "3310:3306"
+    environment:
+      - MYSQL_DATABASE=${DB_NAME:-as_rezteche_db}
+      - MYSQL_USER=${DB_USER:-as_rezteche_user}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-rootpassword}
+    volumes:
+      - as_mysql_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  as_mysql_data:
