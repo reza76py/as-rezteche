@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp, Search } from 'lucide-react'
 
 const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
@@ -14,6 +14,7 @@ export default function StandardsPage() {
   const [standards, setStandards] = useState([])
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState(null)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     axios.get(`${API}/api/standards/`)
@@ -21,6 +22,12 @@ export default function StandardsPage() {
       .catch(err => console.error(err))
       .finally(() => setLoading(false))
   }, [])
+
+  const filtered = standards.filter(s =>
+    s.code.toLowerCase().includes(search.toLowerCase()) ||
+    s.title.toLowerCase().includes(search.toLowerCase()) ||
+    s.summary.toLowerCase().includes(search.toLowerCase())
+  )
 
   if (loading) return (
     <div className="min-h-screen bg-darkbg pt-24 px-4">
@@ -31,18 +38,32 @@ export default function StandardsPage() {
   return (
     <div className="min-h-screen bg-darkbg pt-24 pb-16">
       <div className="max-w-3xl mx-auto px-4">
-        <div className="mb-10">
+        <div className="mb-8">
           <p className="text-xs font-semibold text-accent uppercase tracking-widest mb-3">
             Reference library
           </p>
           <h1 className="text-3xl font-bold text-white mb-3">Standards library</h1>
-          <p className="text-slate-400 text-sm">
+          <p className="text-slate-400 text-sm mb-6">
             All Australian Standards covered by this tool. Click any standard to read more.
           </p>
+          <div className="relative">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input
+              type="text"
+              placeholder="Search by code or keyword..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+            />
+          </div>
         </div>
 
+        {filtered.length === 0 && (
+          <p className="text-sm text-slate-500">No standards match your search.</p>
+        )}
+
         <div className="space-y-3">
-          {standards.map(s => (
+          {filtered.map(s => (
             <div key={s.id} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden hover:border-slate-700 transition-colors">
               <button
                 onClick={() => setExpanded(expanded === s.id ? null : s.id)}
