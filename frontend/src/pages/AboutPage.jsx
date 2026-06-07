@@ -1,4 +1,4 @@
-import { BookOpen, AlertTriangle, Users } from 'lucide-react'
+import { BookOpen, AlertTriangle, Users, Building2, HardHat, Ruler } from 'lucide-react'
 
 export default function AboutPage() {
   return (
@@ -17,18 +17,27 @@ export default function AboutPage() {
         </div>
 
         <div className="space-y-4">
+
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-3 mb-4">
               <div className="bg-primary/10 rounded-lg p-2">
                 <Users size={18} className="text-primary" />
               </div>
               <h2 className="text-base font-semibold text-white">Who is it for?</h2>
             </div>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              The tool helps builders, tradies, designers, BSS selection consultants,
-              and construction professionals quickly identify which Australian Standards
-              apply to their project — and what the key requirements are in plain English.
-            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {[
+                { icon: HardHat, label: 'Builders & tradies', desc: 'Quickly check product compliance before purchasing or installing.' },
+                { icon: Ruler, label: 'Designers & drafters', desc: 'Verify standards when specifying materials and products for a project.' },
+                { icon: Building2, label: 'Construction professionals', desc: 'Reference key requirements across building classes and room types.' },
+              ].map(({ icon: Icon, label, desc }) => (
+                <div key={label} className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
+                  <Icon size={16} className="text-accent mb-2" />
+                  <p className="text-sm font-medium text-white mb-1">{label}</p>
+                  <p className="text-xs text-slate-400 leading-relaxed">{desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
@@ -40,10 +49,10 @@ export default function AboutPage() {
             </div>
             <ol className="space-y-2">
               {[
-                'Select your building class (house, office, shop, etc.)',
-                'Select the room or area you are working in',
-                'Select the product or material you are selecting',
-                'Get the relevant standards and key requirements instantly',
+                'Select your building class — house, office, shop, public building, and more.',
+                'Select the room or area you are working in — the list updates based on your building type.',
+                'Select the product or material you are specifying or purchasing.',
+                'Get the relevant Australian Standards and key compliance requirements instantly.',
               ].map((step, i) => (
                 <li key={i} className="flex items-start gap-3 text-sm text-slate-400">
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/20 text-primary text-xs font-bold flex items-center justify-center mt-0.5">
@@ -75,6 +84,7 @@ export default function AboutPage() {
               Built for the Australian construction industry · Standards based on NCC 2022/2025
             </p>
           </div>
+
         </div>
       </div>
     </div>
