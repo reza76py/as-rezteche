@@ -4,9 +4,21 @@ import { Search, RotateCcw, AlertCircle } from 'lucide-react'
 
 const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
+const ROOM_MAP = {
+  '1': ['bathroom', 'kitchen', 'laundry', 'living-room', 'bedroom', 'balcony-deck', 'external-outdoor', 'garage'],
+  '2': ['bathroom', 'kitchen', 'laundry', 'living-room', 'bedroom', 'balcony-deck', 'corridor-hallway'],
+  '3': ['bathroom', 'kitchen', 'laundry', 'living-room', 'bedroom', 'corridor-hallway'],
+  '5': ['commercial-fitout', 'corridor-hallway', 'external-outdoor'],
+  '6': ['commercial-fitout', 'corridor-hallway', 'external-outdoor'],
+  '7': ['external-outdoor', 'commercial-fitout'],
+  '8': ['external-outdoor', 'commercial-fitout'],
+  '9': ['bathroom', 'commercial-fitout', 'corridor-hallway', 'external-outdoor'],
+  '10': ['external-outdoor', 'garage'],
+}
+
 export default function CheckerPage() {
   const [buildingClasses, setBuildingClasses] = useState([])
-  const [roomTypes, setRoomTypes] = useState([])
+  const [allRoomTypes, setAllRoomTypes] = useState([])
   const [productCategories, setProductCategories] = useState([])
   const [selectedClass, setSelectedClass] = useState('')
   const [selectedRoom, setSelectedRoom] = useState('')
@@ -17,9 +29,22 @@ export default function CheckerPage() {
 
   useEffect(() => {
     axios.get(`${API}/api/building-classes/`).then(r => setBuildingClasses(r.data))
-    axios.get(`${API}/api/rooms/`).then(r => setRoomTypes(r.data))
+    axios.get(`${API}/api/rooms/`).then(r => setAllRoomTypes(r.data))
     axios.get(`${API}/api/categories/`).then(r => setProductCategories(r.data))
   }, [])
+
+  const selectedClassObj = buildingClasses.find(bc => String(bc.id) === String(selectedClass))
+  const filteredRooms = selectedClassObj
+    ? allRoomTypes.filter(r => {
+        const slugs = ROOM_MAP[selectedClassObj.code] || []
+        return slugs.includes(r.slug)
+      })
+    : allRoomTypes
+
+  const handleClassChange = (e) => {
+    setSelectedClass(e.target.value)
+    setSelectedRoom('')
+  }
 
   const handleCheck = () => {
     if (!selectedClass && !selectedRoom && !selectedProduct) return
@@ -68,7 +93,7 @@ export default function CheckerPage() {
               <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
                 Building type
               </label>
-              <select value={selectedClass} onChange={e => setSelectedClass(e.target.value)} className={selectClass}>
+              <select value={selectedClass} onChange={handleClassChange} className={selectClass}>
                 <option value="">Any</option>
                 {buildingClasses.map(bc => (
                   <option key={bc.id} value={bc.id}>Class {bc.code} — {bc.name}</option>
@@ -81,7 +106,7 @@ export default function CheckerPage() {
               </label>
               <select value={selectedRoom} onChange={e => setSelectedRoom(e.target.value)} className={selectClass}>
                 <option value="">Any</option>
-                {roomTypes.map(r => (
+                {filteredRooms.map(r => (
                   <option key={r.id} value={r.id}>{r.name}</option>
                 ))}
               </select>
