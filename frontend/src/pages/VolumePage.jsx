@@ -207,9 +207,6 @@ function NodeBox({ node, onClick, selected, dimmed }) {
       <span className="text-center leading-tight mt-0.5" style={{fontSize: '10px', color: dimmed ? '#1e293b' : '#94a3b8'}}>
         {node.subtitle}
       </span>
-      {node.bss && !dimmed && (
-        <span className="mt-1" style={{fontSize: '9px', color: '#06b6d4'}}>BSS</span>
-      )}
       {node.standard && !dimmed && (
         <span className="mt-0.5" style={{fontSize: '9px', color: '#06b6d4'}}>{node.standard}</span>
       )}
@@ -344,10 +341,6 @@ export default function VolumePage() {
         </div>
 
         <div className="flex items-center gap-4 mt-10 text-xs text-slate-500">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-accent" />
-            BSS relevant
-          </div>
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-0.5 bg-slate-600" />
             Click to drill down · click again to go back up
