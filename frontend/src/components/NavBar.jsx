@@ -16,7 +16,7 @@ export default function NavBar() {
   const links = [
     { to: '/', label: 'Checker' },
     { to: '/standards', label: 'Standards' },
-    { to: '/volume-one', label: 'Volume One' },
+    { to: '/volume-one', label: 'Volumes' },
     { to: '/about', label: 'About' },
   ]
 

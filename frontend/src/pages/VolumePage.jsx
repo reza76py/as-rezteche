@@ -142,8 +142,81 @@ const tree = {
   ]
 }
 
-function getNodeAtPath(path) {
-  return path.reduce((node, id) => node.children?.find(c => c.id === id) || node, tree)
+const treeV2 = {
+  id: 'root2', title: 'NCC Volume Two', subtitle: 'Class 1 and Class 10 buildings', color: '#06b6d4',
+  children: [
+    { id: 'V2-A', title: 'Section A', subtitle: 'Governing requirements', color: '#6366F1', children: [
+      { id: 'V2-A1', title: 'Part A1', subtitle: 'Interpreting the NCC', color: '#6366F1', children: [
+        { id: 'V2-A1-O', title: 'A1O1', subtitle: 'Objective', color: '#6366F1' },
+        { id: 'V2-A1-P', title: 'A1P1', subtitle: 'Performance requirement', color: '#6366F1' },
+        { id: 'V2-A1-D', title: 'A1D1', subtitle: 'DTS solution', color: '#6366F1' },
+      ]},
+      { id: 'V2-A2', title: 'Part A2', subtitle: 'Compliance with the NCC', color: '#6366F1', children: [
+        { id: 'V2-A2-O', title: 'A2O1', subtitle: 'Objective', color: '#6366F1' },
+        { id: 'V2-A2-P', title: 'A2P1', subtitle: 'Performance requirement', color: '#6366F1' },
+        { id: 'V2-A2-D', title: 'A2D1', subtitle: 'DTS solution', color: '#6366F1' },
+      ]},
+      { id: 'V2-A6', title: 'Part A6', subtitle: 'Building classification', color: '#6366F1', children: [
+        { id: 'V2-A6-O', title: 'A6O1', subtitle: 'Objective', color: '#6366F1' },
+        { id: 'V2-A6-F', title: 'A6F1', subtitle: 'Functional statement', color: '#6366F1' },
+        { id: 'V2-A6-P', title: 'A6P1', subtitle: 'Performance requirement', color: '#6366F1' },
+        { id: 'V2-A6-D', title: 'A6D1', subtitle: 'DTS → Class 1 and 10', color: '#6366F1' },
+      ]},
+    ]},
+    { id: 'V2-H', title: 'Section H', subtitle: 'Class 1 and 10 buildings', color: '#06b6d4', children: [
+      { id: 'V2-H1', title: 'Part H1', subtitle: 'Structure', color: '#06b6d4', children: [
+        { id: 'V2-H1-O', title: 'H1O1', subtitle: 'Objective', color: '#06b6d4' },
+        { id: 'V2-H1-P', title: 'H1P1', subtitle: 'Performance requirement', color: '#06b6d4' },
+        { id: 'V2-H1-D', title: 'H1D1', subtitle: 'DTS solution', color: '#06b6d4' },
+      ]},
+      { id: 'V2-H2', title: 'Part H2', subtitle: 'Damp and weatherproofing', color: '#06b6d4', children: [
+        { id: 'V2-H2-O', title: 'H2O1', subtitle: 'Objective', color: '#06b6d4' },
+        { id: 'V2-H2-P', title: 'H2P1', subtitle: 'Performance requirement', color: '#06b6d4' },
+        { id: 'V2-H2-D', title: 'H2D1', subtitle: 'DTS → AS 4654.2', color: '#06b6d4', standard: 'AS 4654.2', children: [
+          { id: 'V2-H2-AS', title: 'AS 4654.2', subtitle: 'External waterproofing membranes', color: '#1D9E75', desc: 'Waterproofing membranes for external above-ground surfaces — balconies, podiums. Membrane must extend minimum 100mm up vertical faces.' },
+        ]},
+      ]},
+      { id: 'V2-H3', title: 'Part H3', subtitle: 'Fire safety', color: '#E24B4A', children: [
+        { id: 'V2-H3-O', title: 'H3O1', subtitle: 'Objective', color: '#E24B4A' },
+        { id: 'V2-H3-P', title: 'H3P1', subtitle: 'Performance requirement', color: '#E24B4A' },
+        { id: 'V2-H3-D', title: 'H3D1', subtitle: 'DTS solution', color: '#E24B4A' },
+      ]},
+      { id: 'V2-H4', title: 'Part H4', subtitle: 'Health and amenity', color: '#1D9E75', children: [
+        { id: 'V2-H4-O', title: 'H4O1', subtitle: 'Objective', color: '#1D9E75' },
+        { id: 'V2-H4-P', title: 'H4P1', subtitle: 'Performance requirement', color: '#1D9E75', desc: 'Wet areas must be waterproofed to prevent water damage and health risks.' },
+        { id: 'V2-H4-D2', title: 'H4D2', subtitle: 'DTS → wet area locations', color: '#1D9E75', desc: 'Specifies where waterproofing is required — shower recess, bathroom floor, laundry.' },
+        { id: 'V2-H4-D3', title: 'H4D3', subtitle: 'DTS → AS 3740', color: '#1D9E75', standard: 'AS 3740, AS 2588', desc: 'Specifies materials and installation method for waterproofing. References AS 3740.', children: [
+          { id: 'V2-H4-AS1', title: 'AS 3740', subtitle: 'Waterproofing of wet areas', color: '#1D9E75', desc: 'Zone 1: shower walls to 1800mm. Zone 2: bathroom floor with 150mm upstand at walls.' },
+          { id: 'V2-H4-AS2', title: 'AS 2588', subtitle: 'Gypsum plasterboard', color: '#1D9E75', desc: 'Moisture-resistant plasterboard required in wet areas. Fire-rated board for FRL walls.' },
+        ]},
+      ]},
+      { id: 'V2-H5', title: 'Part H5', subtitle: 'Safe movement and access', color: '#378ADD', children: [
+        { id: 'V2-H5-O', title: 'H5O1', subtitle: 'Objective', color: '#378ADD' },
+        { id: 'V2-H5-P', title: 'H5P1', subtitle: 'Performance requirement', color: '#378ADD' },
+        { id: 'V2-H5-D', title: 'H5D1', subtitle: 'DTS → stairs and balustrades', color: '#378ADD', desc: 'Minimum stair dimensions, balustrade heights (1m for floors over 1m above ground), slip resistance.' },
+      ]},
+      { id: 'V2-H6', title: 'Part H6', subtitle: 'Energy efficiency', color: '#BA7517', children: [
+        { id: 'V2-H6-O', title: 'H6O1', subtitle: 'Objective', color: '#BA7517' },
+        { id: 'V2-H6-P', title: 'H6P1', subtitle: 'Performance requirement', color: '#BA7517' },
+        { id: 'V2-H6-D', title: 'H6D1', subtitle: 'DTS → AS 4859.1', color: '#BA7517', standard: 'AS 4859.1', desc: 'Minimum R-values for walls, roofs, and floors. Brisbane (Zone 2): R2.5 ceiling, R1.5 wall.', children: [
+          { id: 'V2-H6-AS', title: 'AS 4859.1', subtitle: 'Thermal insulation materials', color: '#BA7517', desc: 'R-value measures resistance to heat flow. Higher R-value = better insulation. Brisbane Zone 2 minimum: R2.5 ceiling, R1.5 wall.' },
+        ]},
+      ]},
+      { id: 'V2-H7', title: 'Part H7', subtitle: 'Ancillary provisions', color: '#888780', children: [
+        { id: 'V2-H7-O', title: 'H7O1', subtitle: 'Objective', color: '#888780' },
+        { id: 'V2-H7-D', title: 'H7D1', subtitle: 'DTS solution', color: '#888780' },
+      ]},
+      { id: 'V2-H8', title: 'Part H8', subtitle: 'Livable housing design', color: '#888780', children: [
+        { id: 'V2-H8-O', title: 'H8O1', subtitle: 'Objective', color: '#888780' },
+        { id: 'V2-H8-P', title: 'H8P1', subtitle: 'Performance requirement', color: '#888780' },
+        { id: 'V2-H8-D', title: 'H8D1', subtitle: 'DTS → livable housing', color: '#888780', desc: 'Accessible entry, step-free shower, wider doorways for livable housing design.' },
+      ]},
+    ]},
+  ]
+}
+
+function getNodeAtPath(path, rootTree) {
+  return path.reduce((node, id) => node.children?.find(c => c.id === id) || node, rootTree)
 }
 
 function getAllNodes(node, depth = 0, result = []) {
@@ -152,12 +225,12 @@ function getAllNodes(node, depth = 0, result = []) {
   return result
 }
 
-function MiniMap({ path, onNavigate }) {
+function MiniMap({ path, onNavigate, rootTree }) {
   const pathNodes = [
-    { id: 'root', label: 'Volume One', color: '#6366F1' },
+    { id: rootTree.id, label: rootTree.title, color: rootTree.color },
     ...path.map(id => {
-      const found = getAllNodes(tree).find(n => n.id === id)
-      return { id, label: found?.title || id, color: found?.color || '#6366F1' }
+      const found = getAllNodes(rootTree).find(n => n.id === id)
+      return { id, label: found?.title || id, color: found?.color || rootTree.color }
     })
   ]
 
@@ -225,6 +298,7 @@ function NodeBox({ node, onClick, selected, dimmed }) {
 export default function VolumePage() {
   const [path, setPath] = useState([])
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  const [activeVolume, setActiveVolume] = useState(1)
 
   useEffect(() => {
     const handler = () => setIsMobile(window.innerWidth < 768)
@@ -232,7 +306,14 @@ export default function VolumePage() {
     return () => window.removeEventListener('resize', handler)
   }, [])
 
-  const displayNode = getNodeAtPath(path)
+  const handleVolumeChange = (vol) => {
+    setActiveVolume(vol)
+    setPath([])
+  }
+
+  const currentTree = activeVolume === 1 ? tree : treeV2
+
+  const displayNode = getNodeAtPath(path, currentTree)
   const displayChildren = displayNode.children || []
   const nextSelectedId = displayChildren.find(c => path.includes(c.id))?.id || null
 
@@ -265,13 +346,44 @@ export default function VolumePage() {
 
         <div className="mb-8">
           <p className="text-xs font-semibold text-accent uppercase tracking-widest mb-3">NCC 2022</p>
-          <h1 className="text-3xl font-bold text-white mb-2">Volume One</h1>
-          <p className="text-slate-400 text-sm">Class 2 to Class 9. Click any node to drill down. Click again to go back up.</p>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            {activeVolume === 1 ? 'Volume One' : 'Volume Two'}
+          </h1>
+          <p className="text-slate-400 text-sm">
+            {activeVolume === 1 ? 'Class 2 to Class 9 buildings' : 'Class 1 and Class 10 buildings'}
+            {' '}· Click any node to drill down. Click again to go back up.
+          </p>
+        </div>
+
+        <div className="flex gap-3 mb-6">
+          <button
+            onClick={() => handleVolumeChange(1)}
+            className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            style={{
+              backgroundColor: activeVolume === 1 ? '#6366F122' : '#0f172a',
+              border: activeVolume === 1 ? '2px solid #6366F1' : '1px solid #334155',
+              color: activeVolume === 1 ? '#6366F1' : '#64748b',
+            }}
+          >
+            Volume One
+          </button>
+          <button
+            onClick={() => handleVolumeChange(2)}
+            className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            style={{
+              backgroundColor: activeVolume === 2 ? '#06b6d422' : '#0f172a',
+              border: activeVolume === 2 ? '2px solid #06b6d4' : '1px solid #334155',
+              color: activeVolume === 2 ? '#06b6d4' : '#64748b',
+            }}
+          >
+            Volume Two
+          </button>
         </div>
 
         <MiniMap
           path={path}
           onNavigate={(index) => setPath(path.slice(0, index))}
+          rootTree={currentTree}
         />
 
         <div className="flex flex-col items-center">
