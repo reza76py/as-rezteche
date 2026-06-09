@@ -82,7 +82,7 @@ export default function StandardsPage() {
                 className="w-full text-left px-5 py-4 flex items-start justify-between gap-4"
               >
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-1">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span className="text-sm font-semibold text-white">{s.code}</span>
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${priorityStyle[s.priority]}`}>
                       {s.priority}

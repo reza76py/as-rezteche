@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const tree = {
   id: 'root', title: 'NCC Volume One', subtitle: 'Class 2 to Class 9', color: '#6366F1',
@@ -149,63 +149,45 @@ function getAllNodes(node, depth = 0, result = []) {
 }
 
 function MiniMap({ path }) {
-  const allNodes = getAllNodes(tree)
-  const maxDepth = 3
-  const nodesByDepth = {}
-  for (let d = 0; d <= maxDepth; d++) {
-    nodesByDepth[d] = allNodes.filter(n => n.depth === d)
-  }
-
-  const pathSet = new Set(['root', ...path])
-  const activeId = path[path.length - 1] || 'root'
+  const pathNodes = [
+    { id: 'root', label: 'Volume One', color: '#6366F1' },
+    ...path.map(id => {
+      const found = getAllNodes(tree).find(n => n.id === id)
+      return { id, label: found?.title || id, color: found?.color || '#6366F1' }
+    })
+  ]
 
   return (
-    <div className="bg-slate-900 border border-slate-700 rounded-xl p-3" style={{width: '200px', flexShrink: 0}}>
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">You are here</p>
-      {[0, 1, 2, 3].map(depth => {
-        const nodes = nodesByDepth[depth] || []
-        const labels = ['Volume', 'Section', 'Part', 'Clause']
-        return (
-          <div key={depth} className="mb-2">
-            <p style={{fontSize: '9px', color: '#475569', marginBottom: '3px'}}>{labels[depth]}</p>
-            <div className="flex flex-wrap gap-1">
-              {nodes.map(node => {
-                const isActive = node.id === activeId
-                const isInPath = pathSet.has(node.id)
-                return (
-                  <div
-                    key={node.id}
-                    className="rounded"
-                    style={{
-                      width: depth === 0 ? '100%' : depth === 1 ? '28px' : '24px',
-                      height: '14px',
-                      backgroundColor: isActive ? node.color : isInPath ? node.color + '44' : '#1e293b',
-                      border: `1px solid ${isActive ? node.color : isInPath ? node.color + '66' : '#334155'}`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    {(isActive || (isInPath && depth <= 2)) && (
-                      <span style={{fontSize: '7px', color: isActive ? '#fff' : node.color, fontWeight: 500}}>
-                        {node.id === 'root' ? 'V1' : node.id.replace('root', '')}
-                      </span>
-                    )}
-                  </div>
-                )
-              })}
+    <div
+      className="bg-slate-900 border border-slate-700 rounded-xl p-3 sticky top-24"
+      style={{width: '160px', flexShrink: 0}}
+    >
+      <p style={{fontSize: '9px', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px', fontWeight: 500}}>
+        Your path
+      </p>
+      <div className="flex flex-col items-start gap-0">
+        {pathNodes.map((node, i) => (
+          <div key={node.id} className="flex flex-col items-start w-full">
+            <div
+              className="rounded-lg px-2 py-1 w-full"
+              style={{
+                backgroundColor: node.color + '22',
+                border: `1px solid ${node.color + '66'}`,
+              }}
+            >
+              <p style={{fontSize: '10px', color: node.color, fontWeight: 500, lineHeight: 1.3}}>
+                {node.label}
+              </p>
             </div>
+            {i < pathNodes.length - 1 && (
+              <div
+                className="ml-3"
+                style={{width: '1px', height: '10px', backgroundColor: pathNodes[i + 1].color + '66'}}
+              />
+            )}
           </div>
-        )
-      })}
-      {path.length > 0 && (
-        <div className="mt-3 pt-2 border-t border-slate-700">
-          <p style={{fontSize: '9px', color: '#475569', marginBottom: '2px'}}>Path</p>
-          <p style={{fontSize: '9px', color: '#06b6d4'}}>
-            V1 → {path.join(' → ')}
-          </p>
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   )
 }
@@ -242,6 +224,13 @@ function NodeBox({ node, onClick, selected, dimmed }) {
 
 export default function VolumePage() {
   const [path, setPath] = useState([])
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handler)
+    return () => window.removeEventListener('resize', handler)
+  }, [])
 
   const displayNode = getNodeAtPath(path)
   const displayChildren = displayNode.children || []
@@ -308,7 +297,7 @@ export default function VolumePage() {
                     }} />
                   )}
                   <div className="grid pt-0" style={{
-                    gridTemplateColumns: `repeat(${Math.min(displayChildren.length, 5)}, 1fr)`,
+                    gridTemplateColumns: `repeat(${Math.min(displayChildren.length, isMobile ? 2 : 5)}, 1fr)`,
                     gap: '8px',
                   }}>
                     {displayChildren.map(child => {
@@ -334,7 +323,7 @@ export default function VolumePage() {
                       <div className="w-0.5 h-6 bg-slate-600 mt-2" />
                       <div className="relative w-full">
                         <div className="grid" style={{
-                          gridTemplateColumns: `repeat(${Math.min(grandchildren.length, 5)}, 1fr)`,
+                          gridTemplateColumns: `repeat(${Math.min(grandchildren.length, isMobile ? 2 : 5)}, 1fr)`,
                           gap: '8px',
                         }}>
                           {grandchildren.map(gc => {
@@ -356,9 +345,7 @@ export default function VolumePage() {
             )}
           </div>
 
-          <div className="sticky top-24">
-            <MiniMap path={['root', ...path]} />
-          </div>
+          <MiniMap path={['root', ...path]} />
 
         </div>
 

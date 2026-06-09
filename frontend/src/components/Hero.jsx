@@ -2,7 +2,7 @@ import { ArrowRight } from 'lucide-react'
 
 export default function Hero() {
   return (
-    <div className="bg-darkbg pt-32 pb-12 px-4">
+    <div className="bg-darkbg pt-24 sm:pt-32 pb-10 sm:pb-12 px-4">
       <div className="max-w-3xl mx-auto">
 
         <p className="text-xs font-semibold text-accent uppercase tracking-widest mb-4">
