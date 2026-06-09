@@ -10,6 +10,18 @@ const priorityStyle = {
   low: 'bg-slate-800 text-slate-400 border border-slate-700',
 }
 
+const volumeMap = {
+  'AS 1288:2021': 'Vol. 1 & 2',
+  'AS 2047:2014': 'Vol. 1 & 2',
+  'AS 3740': 'Vol. 2',
+  'AS 2588:2018': 'Vol. 1 & 2',
+  'AS 2589:2017': 'Vol. 1 & 2',
+  'AS 1604.1:2012': 'Vol. 1 & 2',
+  'AS 4654.2': 'Vol. 1 & 2',
+  'AS 4859.1:2018': 'Vol. 1 & 2',
+  'AS 2311:2017': 'Vol. 1 & 2',
+}
+
 export default function StandardsPage() {
   const [standards, setStandards] = useState([])
   const [loading, setLoading] = useState(true)
@@ -74,6 +86,9 @@ export default function StandardsPage() {
                     <span className="text-sm font-semibold text-white">{s.code}</span>
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${priorityStyle[s.priority]}`}>
                       {s.priority}
+                    </span>
+                    <span className="text-xs text-slate-500 border border-slate-700 px-2 py-0.5 rounded-full">
+                      {volumeMap[s.code] || 'Vol. 1 & 2'}
                     </span>
                   </div>
                   <p className="text-sm text-slate-400">{s.title}</p>

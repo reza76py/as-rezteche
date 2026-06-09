@@ -14,6 +14,7 @@ export default function NavBar() {
   const links = [
     { to: '/', label: 'Checker' },
     { to: '/standards', label: 'Standards' },
+    { to: '/volume-one', label: 'Volume One' },
     { to: '/about', label: 'About' },
   ]
 
@@ -23,7 +24,7 @@ export default function NavBar() {
     }`}>
       <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <img src="/rezteche-logo.png" alt="RezTeche" className="h-20 w-auto object-contain" />
+          <img src="/rezteche-logo.png" alt="RezTeche" className="h-12 w-auto object-contain" />
           <div className="flex flex-col leading-tight">
             <span className="text-white font-bold text-sm">AS Checker</span>
             <span className="text-xs text-slate-400 hidden sm:block">Australian Standards Reference</span>
