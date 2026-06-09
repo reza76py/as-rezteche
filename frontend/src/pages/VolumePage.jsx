@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react'
 
+const fadeSlideIn = {
+  animation: 'fadeSlideIn 0.3s ease forwards',
+}
+
 const tree = {
   id: 'root', title: 'NCC Volume One', subtitle: 'Class 2 to Class 9', color: '#6366F1',
   children: [
@@ -192,13 +196,17 @@ function NodeBox({ node, onClick, selected, dimmed }) {
     <button
       onClick={() => onClick(node)}
       disabled={dimmed || !node.children}
-      className="flex flex-col items-center justify-center rounded-xl border-2 transition-all px-2 py-2 min-w-0 w-full"
+      className="flex flex-col items-center justify-center rounded-xl border-2 px-2 py-2 min-w-0 w-full"
+      onMouseEnter={e => { if (!dimmed) e.currentTarget.style.transform = 'scale(1.04)' }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
       style={{
         borderColor: selected ? node.color : dimmed ? '#1e293b' : '#334155',
         backgroundColor: selected ? node.color + '22' : dimmed ? '#0a0f1a' : '#0f172a',
         opacity: dimmed ? 0.25 : 1,
         minHeight: '64px',
         cursor: (dimmed || !node.children) ? 'default' : 'pointer',
+        transition: 'all 0.2s ease',
+        animation: selected ? 'pulse 2s ease-in-out infinite' : undefined,
       }}
     >
       <span className="text-xs font-bold" style={{color: dimmed ? '#334155' : node.color}}>
@@ -241,6 +249,17 @@ export default function VolumePage() {
   const goBack = () => setPath(path.slice(0, -1))
 
   return (
+    <>
+    <style>{`
+      @keyframes fadeSlideIn {
+        from { opacity: 0; transform: translateY(-12px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes pulse {
+        0%, 100% { box-shadow: 0 0 0 0px rgba(99,102,241,0.4); }
+        50% { box-shadow: 0 0 0 6px rgba(99,102,241,0.1); }
+      }
+    `}</style>
     <div className="min-h-screen bg-darkbg pt-24 pb-16">
       <div className="max-w-5xl mx-auto px-4">
 
@@ -291,6 +310,7 @@ export default function VolumePage() {
                       right: `${100 / (displayChildren.length * 2)}%`,
                     }} />
                   )}
+                  <div style={fadeSlideIn}>
                   <div className="grid pt-0" style={{
                     gridTemplateColumns: `repeat(${Math.min(displayChildren.length, isMobile ? 2 : 5)}, 1fr)`,
                     gap: '8px',
@@ -306,6 +326,7 @@ export default function VolumePage() {
                       )
                     })}
                   </div>
+                  </div>
                 </div>
 
                 {nextSelectedId && (() => {
@@ -317,6 +338,7 @@ export default function VolumePage() {
                     <>
                       <div className="w-0.5 h-6 bg-slate-600 mt-2" />
                       <div className="relative w-full">
+                        <div style={fadeSlideIn}>
                         <div className="grid" style={{
                           gridTemplateColumns: `repeat(${Math.min(grandchildren.length, isMobile ? 2 : 5)}, 1fr)`,
                           gap: '8px',
@@ -331,6 +353,7 @@ export default function VolumePage() {
                               </div>
                             )
                           })}
+                        </div>
                         </div>
                       </div>
                     </>
@@ -348,5 +371,6 @@ export default function VolumePage() {
         </div>
       </div>
     </div>
+    </>
   )
 }
