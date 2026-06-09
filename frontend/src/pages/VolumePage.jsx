@@ -148,7 +148,7 @@ function getAllNodes(node, depth = 0, result = []) {
   return result
 }
 
-function MiniMap({ path }) {
+function MiniMap({ path, onNavigate }) {
   const pathNodes = [
     { id: 'root', label: 'Volume One', color: '#6366F1' },
     ...path.map(id => {
@@ -158,18 +158,19 @@ function MiniMap({ path }) {
   ]
 
   return (
-    <div
-      className="bg-slate-900 border border-slate-700 rounded-xl p-3 sticky top-24"
-      style={{width: '160px', flexShrink: 0}}
-    >
-      <p style={{fontSize: '9px', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px', fontWeight: 500}}>
+    <div className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 mb-6">
+      <p style={{fontSize: '9px', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px', fontWeight: 500}}>
         Your path
       </p>
-      <div className="flex flex-col items-start gap-0">
+      <div className="flex flex-wrap items-center gap-1">
         {pathNodes.map((node, i) => (
-          <div key={node.id} className="flex flex-col items-start w-full">
-            <div
-              className="rounded-lg px-2 py-1 w-full"
+          <div key={node.id} className="flex items-center gap-1">
+            {i > 0 && (
+              <span style={{fontSize: '10px', color: '#475569'}}>→</span>
+            )}
+            <button
+              onClick={() => onNavigate(i)}
+              className="rounded-lg px-2 py-1 transition-all hover:opacity-80"
               style={{
                 backgroundColor: node.color + '22',
                 border: `1px solid ${node.color + '66'}`,
@@ -178,13 +179,7 @@ function MiniMap({ path }) {
               <p style={{fontSize: '10px', color: node.color, fontWeight: 500, lineHeight: 1.3}}>
                 {node.label}
               </p>
-            </div>
-            {i < pathNodes.length - 1 && (
-              <div
-                className="ml-3"
-                style={{width: '1px', height: '10px', backgroundColor: pathNodes[i + 1].color + '66'}}
-              />
-            )}
+            </button>
           </div>
         ))}
       </div>
@@ -258,9 +253,12 @@ export default function VolumePage() {
           <p className="text-slate-400 text-sm">Class 2 to Class 9. Click any node to drill down. Click again to go back up.</p>
         </div>
 
-        <div className="flex gap-6 items-start">
+        <MiniMap
+          path={path}
+          onNavigate={(index) => setPath(path.slice(0, index))}
+        />
 
-          <div className="flex-1 flex flex-col items-center">
+        <div className="flex flex-col items-center">
 
             {path.length > 0 && (
               <button onClick={goBack} className="self-start flex items-center gap-2 text-sm text-slate-400 hover:text-white mb-4 transition-colors">
@@ -343,10 +341,6 @@ export default function VolumePage() {
                 })()}
               </>
             )}
-          </div>
-
-          <MiniMap path={['root', ...path]} />
-
         </div>
 
         <div className="flex items-center gap-4 mt-10 text-xs text-slate-500">
