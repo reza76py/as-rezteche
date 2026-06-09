@@ -349,10 +349,7 @@ export default function VolumePage() {
           <h1 className="text-3xl font-bold text-white mb-2">
             {activeVolume === 1 ? 'Volume One' : 'Volume Two'}
           </h1>
-          <p className="text-slate-400 text-sm">
-            {activeVolume === 1 ? 'Class 2 to Class 9 buildings' : 'Class 1 and Class 10 buildings'}
-            {' '}· Click any node to drill down. Click again to go back up.
-          </p>
+
         </div>
 
         <div className="flex gap-3 mb-6">
@@ -475,12 +472,7 @@ export default function VolumePage() {
             )}
         </div>
 
-        <div className="flex items-center gap-4 mt-10 text-xs text-slate-500">
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-0.5 bg-slate-600" />
-            Click to drill down · click again to go back up
-          </div>
-        </div>
+        
       </div>
     </div>
     </>
