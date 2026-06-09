@@ -50,7 +50,9 @@ const tree = {
       { id: 'D4', title: 'Part D4', subtitle: 'Disability access', color: '#378ADD', bss: true, children: [
         { id: 'D4-O', title: 'D4O1', subtitle: 'Objective', color: '#378ADD' },
         { id: 'D4-P', title: 'D4P1', subtitle: 'Performance requirement', color: '#378ADD' },
-        { id: 'D4-D', title: 'D4D1', subtitle: 'DTS → AS 1428.1', color: '#378ADD', standard: 'AS 1428.1' },
+        { id: 'D4-D', title: 'D4D1', subtitle: 'DTS → AS 1428.1', color: '#378ADD', standard: 'AS 1428.1', children: [
+          { id: 'D4-AS', title: 'AS 1428.1', subtitle: 'Design for access and mobility', color: '#06b6d4', desc: 'Sets minimum requirements for accessible building design — door widths (min 850mm clear), corridor widths, ramp gradients (1:14 max), and accessible path of travel from street to building entry.' },
+        ]},
       ]},
     ]},
     { id: 'E', title: 'Section E', subtitle: 'Services', color: '#888780', children: [
@@ -69,18 +71,26 @@ const tree = {
       { id: 'F1', title: 'Part F1', subtitle: 'Surface water', color: '#1D9E75', children: [
         { id: 'F1-O', title: 'F1O1', subtitle: 'Objective', color: '#1D9E75' },
         { id: 'F1-P', title: 'F1P1', subtitle: 'Performance requirement', color: '#1D9E75' },
-        { id: 'F1-D', title: 'F1D1', subtitle: 'DTS → AS 4654.2', color: '#1D9E75', standard: 'AS 4654.2' },
+        { id: 'F1-D', title: 'F1D1', subtitle: 'DTS → AS 4654.2', color: '#1D9E75', standard: 'AS 4654.2', children: [
+          { id: 'F1-AS', title: 'AS 4654.2', subtitle: 'Waterproofing — external above-ground', color: '#06b6d4', desc: 'Covers waterproofing membranes for external above-ground surfaces such as balconies and podiums. Membrane must extend minimum 100mm up vertical faces. All penetrations must be fully detailed.' },
+        ]},
       ]},
       { id: 'F2', title: 'Part F2', subtitle: 'Wet areas', color: '#1D9E75', bss: true, children: [
         { id: 'F2-O', title: 'F2O1', subtitle: 'Objective', color: '#1D9E75', desc: 'Minimise risk of water from wet areas causing damage or unhealthy conditions.' },
         { id: 'F2-F', title: 'F2F1, F2F2', subtitle: 'Functional statements', color: '#1D9E75', desc: 'Building must protect against water damage and overflow from bathrooms and laundries.' },
         { id: 'F2-P', title: 'F2P1, F2P2', subtitle: 'Performance requirements', color: '#1D9E75', desc: 'Overflow from bathrooms must be prevented from reaching other units or public spaces.' },
-        { id: 'F2-D', title: 'F2D1 → F2D2', subtitle: 'DTS → AS 3740', color: '#1D9E75', standard: 'AS 3740, AS 2588', desc: 'Building elements in wet areas must be waterproof per Specification 26 and comply with AS 3740.' },
+        { id: 'F2-D', title: 'F2D1 → F2D2', subtitle: 'DTS → AS 3740', color: '#1D9E75', standard: 'AS 3740, AS 2588', desc: 'Building elements in wet areas must be waterproof per Specification 26 and comply with AS 3740.', children: [
+          { id: 'F2-AS1', title: 'AS 3740', subtitle: 'Waterproofing of domestic wet areas', color: '#06b6d4', desc: 'Zone 1: shower recess floor and walls to 1800mm. Zone 2: bathroom floor with 150mm upstand at walls. Products must be compatible with substrate and applied by a licensed waterproofer.' },
+          { id: 'F2-AS2', title: 'AS 2588', subtitle: 'Gypsum plasterboard', color: '#06b6d4', desc: 'Moisture-resistant (MR) plasterboard required in wet areas. Fire-rated board required on FRL walls. Standard board for dry areas only.' },
+        ]},
       ]},
       { id: 'F3', title: 'Part F3', subtitle: 'Roof and wall cladding', color: '#1D9E75', bss: true, children: [
         { id: 'F3-O', title: 'F3O1', subtitle: 'Objective', color: '#1D9E75' },
         { id: 'F3-P', title: 'F3P1', subtitle: 'Performance requirement', color: '#1D9E75' },
-        { id: 'F3-D', title: 'F3D1', subtitle: 'DTS → AS 1288, AS 2047', color: '#1D9E75', standard: 'AS 1288, AS 2047' },
+        { id: 'F3-D', title: 'F3D1', subtitle: 'DTS → AS 1288, AS 2047', color: '#1D9E75', standard: 'AS 1288, AS 2047', children: [
+          { id: 'F3-AS1', title: 'AS 1288:2021', subtitle: 'Glass in buildings', color: '#06b6d4', desc: 'Safety glass required in shower screens, near doors, and low-level glazing below 300mm from floor. Minimum 6mm toughened safety glass for shower screens. Laminated glass for overhead glazing.' },
+          { id: 'F3-AS2', title: 'AS 2047:2014', subtitle: 'Windows and external glazed doors', color: '#06b6d4', desc: 'Windows and external glazed doors must meet structural and weather performance ratings for the wind region. Performance levels N1 to N6. Products must be tested and rated to AS 2047.' },
+        ]},
       ]},
       { id: 'F5', title: 'Part F5', subtitle: 'Room heights', color: '#1D9E75', bss: true, children: [
         { id: 'F5-O', title: 'F5O1', subtitle: 'Objective', color: '#1D9E75' },
@@ -115,7 +125,9 @@ const tree = {
       { id: 'J4', title: 'Part J4', subtitle: 'Building fabric', color: '#BA7517', bss: true, children: [
         { id: 'J4-O', title: 'J4O1', subtitle: 'Objective', color: '#BA7517' },
         { id: 'J4-P', title: 'J4P1', subtitle: 'Performance requirement', color: '#BA7517' },
-        { id: 'J4-D', title: 'J4D2', subtitle: 'DTS → AS 4859.1', color: '#BA7517', standard: 'AS 4859.1', desc: 'Minimum R-values for walls, roofs, and floors based on climate zone.' },
+        { id: 'J4-D', title: 'J4D2', subtitle: 'DTS → AS 4859.1', color: '#BA7517', standard: 'AS 4859.1', desc: 'Minimum R-values for walls, roofs, and floors based on climate zone.', children: [
+          { id: 'J4-AS', title: 'AS 4859.1:2018', subtitle: 'Thermal insulation materials', color: '#06b6d4', desc: 'R-value measures resistance to heat flow. Brisbane (Zone 2): R2.5 ceiling, R1.5 wall minimum for Class 1. Higher values required for commercial. Common products: glass wool batts, polyester batts, rigid foam boards.' },
+        ]},
       ]},
       { id: 'J5', title: 'Part J5', subtitle: 'Building sealing', color: '#BA7517', bss: true, children: [
         { id: 'J5-O', title: 'J5O1', subtitle: 'Objective', color: '#BA7517' },
