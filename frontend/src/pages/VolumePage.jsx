@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { Search, X } from 'lucide-react'
 
 const fadeSlideIn = {
   animation: 'fadeSlideIn 0.3s ease forwards',
@@ -215,6 +216,70 @@ const treeV2 = {
   ]
 }
 
+// ─── Search helpers ───────────────────────────────────────────────────────────
+
+/**
+ * Walk every node in a tree and collect {node, path} pairs where path is
+ * the array of ancestor IDs needed to navigate to that node.
+ */
+function collectAllNodes(node, ancestorPath = [], results = []) {
+  const currentPath = node.id === 'root' || node.id === 'root2' ? [] : [...ancestorPath, node.id]
+  results.push({ node, path: currentPath })
+  if (node.children) {
+    node.children.forEach(child => collectAllNodes(child, currentPath, results))
+  }
+  return results
+}
+
+/**
+ * Return true if the query matches any searchable field on the node.
+ */
+function nodeMatches(node, query) {
+  const q = query.toLowerCase().trim()
+  if (!q) return false
+  const fields = [
+    node.title,
+    node.subtitle,
+    node.standard,
+    node.desc,
+  ].filter(Boolean).map(f => f.toLowerCase())
+  return fields.some(f => f.includes(q))
+}
+
+/**
+ * Search both trees and return up to 12 results with volume info.
+ */
+function searchTrees(query) {
+  if (!query.trim()) return []
+  const v1Nodes = collectAllNodes(tree)
+  const v2Nodes = collectAllNodes(treeV2)
+
+  const v1Results = v1Nodes
+    .filter(({ node }) => nodeMatches(node, query))
+    .map(({ node, path }) => ({ node, path, volume: 1, volumeTree: tree }))
+
+  const v2Results = v2Nodes
+    .filter(({ node }) => nodeMatches(node, query))
+    .map(({ node, path }) => ({ node, path, volume: 2, volumeTree: treeV2 }))
+
+  return [...v1Results, ...v2Results].slice(0, 12)
+}
+
+/**
+ * Build a human-readable breadcrumb label array for a path.
+ */
+function buildBreadcrumbs(path, rootTree) {
+  const allNodes = collectAllNodes(rootTree)
+  const labels = [rootTree.title]
+  path.forEach(id => {
+    const found = allNodes.find(n => n.node.id === id)
+    if (found) labels.push(found.node.title)
+  })
+  return labels
+}
+
+// ─── Original helpers ─────────────────────────────────────────────────────────
+
 function getNodeAtPath(path, rootTree) {
   return path.reduce((node, id) => node.children?.find(c => c.id === id) || node, rootTree)
 }
@@ -224,6 +289,8 @@ function getAllNodes(node, depth = 0, result = []) {
   if (node.children) node.children.forEach(c => getAllNodes(c, depth + 1, result))
   return result
 }
+
+// ─── Components ──────────────────────────────────────────────────────────────
 
 function MiniMap({ path, onNavigate, rootTree }) {
   const pathNodes = [
@@ -295,10 +362,166 @@ function NodeBox({ node, onClick, selected, dimmed }) {
   )
 }
 
+// ─── Search UI ────────────────────────────────────────────────────────────────
+
+function SearchBar({ query, setQuery, onNavigateToResult }) {
+  const results = query.trim().length >= 2 ? searchTrees(query) : []
+  const [open, setOpen] = useState(false)
+  const inputRef = useRef(null)
+  const containerRef = useRef(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handler = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const handleSelect = (result) => {
+    onNavigateToResult(result)
+    setOpen(false)
+  }
+
+  const clearSearch = () => {
+    setQuery('')
+    setOpen(false)
+    inputRef.current?.focus()
+  }
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', maxWidth: '480px' }}>
+      {/* Input */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        backgroundColor: '#0f172a',
+        border: '1px solid #334155',
+        borderRadius: '10px',
+        padding: '8px 12px',
+        transition: 'border-color 0.2s',
+      }}
+        onFocus={() => results.length > 0 && setOpen(true)}
+      >
+        <Search size={14} color="#475569" style={{ flexShrink: 0 }} />
+        <input
+          ref={inputRef}
+          value={query}
+          onChange={e => { setQuery(e.target.value); setOpen(e.target.value.trim().length >= 2) }}
+          placeholder="Search by keyword, AS number or section…"
+          style={{
+            flex: 1,
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            color: '#e2e8f0',
+            fontSize: '13px',
+          }}
+        />
+        {query && (
+          <button onClick={clearSearch} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            <X size={13} color="#475569" />
+          </button>
+        )}
+      </div>
+
+      {/* Dropdown results */}
+      {open && (
+        <div style={{
+          position: 'absolute',
+          top: 'calc(100% + 6px)',
+          left: 0,
+          right: 0,
+          backgroundColor: '#0f172a',
+          border: '1px solid #334155',
+          borderRadius: '12px',
+          zIndex: 50,
+          overflow: 'hidden',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+          animation: 'fadeSlideIn 0.2s ease forwards',
+        }}>
+          {results.length === 0 ? (
+            <div style={{ padding: '16px', textAlign: 'center', color: '#475569', fontSize: '12px' }}>
+              No results for "{query}"
+            </div>
+          ) : (
+            <>
+              <div style={{ padding: '8px 12px 4px', borderBottom: '1px solid #1e293b' }}>
+                <span style={{ fontSize: '10px', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  {results.length} result{results.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+              {results.map((result, i) => {
+                const breadcrumbs = buildBreadcrumbs(result.path, result.volumeTree)
+                const volColor = result.volume === 1 ? '#6366F1' : '#06b6d4'
+                return (
+                  <button
+                    key={i}
+                    onClick={() => handleSelect(result)}
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: '10px 12px',
+                      background: 'none',
+                      border: 'none',
+                      borderBottom: i < results.length - 1 ? '1px solid #1e293b' : 'none',
+                      cursor: 'pointer',
+                      transition: 'background 0.15s',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#1e293b'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                  >
+                    {/* Node title + subtitle */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                      <span style={{
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: result.node.color || '#e2e8f0',
+                      }}>
+                        {result.node.title}
+                      </span>
+                      <span style={{ fontSize: '10px', color: '#64748b' }}>
+                        {result.node.subtitle}
+                      </span>
+                    </div>
+                    {/* Breadcrumb path */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '3px' }}>
+                      {breadcrumbs.map((crumb, ci) => (
+                        <span key={ci} style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                          {ci > 0 && <span style={{ fontSize: '9px', color: '#334155' }}>→</span>}
+                          <span style={{
+                            fontSize: '9px',
+                            color: ci === 0 ? volColor : '#475569',
+                            fontWeight: ci === 0 ? 600 : 400,
+                          }}>
+                            {crumb}
+                          </span>
+                        </span>
+                      ))}
+                    </div>
+                  </button>
+                )
+              })}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function VolumePage() {
   const [path, setPath] = useState([])
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const [activeVolume, setActiveVolume] = useState(1)
+  const [query, setQuery] = useState('')
 
   useEffect(() => {
     const handler = () => setIsMobile(window.innerWidth < 768)
@@ -329,6 +552,18 @@ export default function VolumePage() {
 
   const goBack = () => setPath(path.slice(0, -1))
 
+  // Called when the user picks a search result
+  const handleNavigateToResult = (result) => {
+    // Switch volume if needed
+    setActiveVolume(result.volume)
+    // Set the path — exclude the target node's own id if it has no children
+    // (leaf nodes can't be "entered", so navigate to its parent instead)
+    const targetPath = result.node.children
+      ? result.path
+      : result.path.slice(0, -1)
+    setPath(targetPath)
+  }
+
   return (
     <>
     <style>{`
@@ -344,12 +579,13 @@ export default function VolumePage() {
     <div className="min-h-screen bg-darkbg pt-24 pb-16">
       <div className="max-w-5xl mx-auto px-4">
 
-        <div className="mb-8">
+        <div className="mb-6">
           <p className="text-xs font-semibold text-accent uppercase tracking-widest mb-3">NCC 2022</p>
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="text-3xl font-bold text-white mb-4">
             {activeVolume === 1 ? 'Volume One' : 'Volume Two'}
           </h1>
-
+          {/* Search bar sits here, right below the heading */}
+          <SearchBar query={query} setQuery={setQuery} onNavigateToResult={handleNavigateToResult} />
         </div>
 
         <div className="flex gap-3 mb-6">
@@ -472,7 +708,6 @@ export default function VolumePage() {
             )}
         </div>
 
-        
       </div>
     </div>
     </>
