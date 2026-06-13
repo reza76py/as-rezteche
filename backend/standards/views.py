@@ -1,10 +1,10 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Standard, ProductCategory, RoomType, BuildingClass, ComplianceRule
+from .models import Standard, BuildingClass, RoomType, ProductCategory, ComplianceRule, NCCNode
 from .serializers import (
-    StandardSerializer, ProductCategorySerializer,
-    RoomTypeSerializer, BuildingClassSerializer, ComplianceRuleSerializer
+    StandardSerializer, BuildingClassSerializer,
+    RoomTypeSerializer, ProductCategorySerializer, NCCNodeSerializer
 )
 
 
@@ -19,9 +19,9 @@ class StandardDetailView(generics.RetrieveAPIView):
     lookup_field = 'code'
 
 
-class ProductCategoryListView(generics.ListAPIView):
-    queryset = ProductCategory.objects.all()
-    serializer_class = ProductCategorySerializer
+class BuildingClassListView(generics.ListAPIView):
+    queryset = BuildingClass.objects.all()
+    serializer_class = BuildingClassSerializer
 
 
 class RoomTypeListView(generics.ListAPIView):
@@ -29,30 +29,54 @@ class RoomTypeListView(generics.ListAPIView):
     serializer_class = RoomTypeSerializer
 
 
-class BuildingClassListView(generics.ListAPIView):
-    queryset = BuildingClass.objects.all()
-    serializer_class = BuildingClassSerializer
+class ProductCategoryListView(generics.ListAPIView):
+    queryset = ProductCategory.objects.all()
+    serializer_class = ProductCategorySerializer
 
 
 @api_view(['POST'])
 def check_compliance(request):
-    building_class_id = request.data.get('building_class')
-    room_type_id = request.data.get('room_type')
-    product_category_id = request.data.get('product_category')
+    building_class_code = request.data.get('building_class')
+    room_type_slug = request.data.get('room_type')
+    product_category_slug = request.data.get('product_category')
 
     rules = ComplianceRule.objects.all()
 
-    if building_class_id:
-        rules = rules.filter(building_classes__id=building_class_id)
-    if room_type_id:
-        rules = rules.filter(room_types__id=room_type_id)
-    if product_category_id:
-        rules = rules.filter(product_categories__id=product_category_id)
+    if building_class_code:
+        rules = rules.filter(building_classes__code=building_class_code)
+    if room_type_slug:
+        rules = rules.filter(room_types__slug=room_type_slug)
+    if product_category_slug:
+        rules = rules.filter(product_categories__slug=product_category_slug)
 
     rules = rules.distinct()
-    serializer = ComplianceRuleSerializer(rules, many=True)
 
-    return Response({
-        'count': rules.count(),
-        'results': serializer.data
-    })
+    results = []
+    for rule in rules:
+        results.append({
+            'standard_code': rule.standard.code,
+            'standard_title': rule.standard.title,
+            'requirement': rule.requirement,
+            'key_numbers': rule.key_numbers,
+            'reason': rule.reason,
+        })
+
+    return Response(results)
+
+
+@api_view(['GET'])
+def ncc_tree(request):
+    volume = request.query_params.get('volume', '1')
+    try:
+        volume_int = int(volume)
+    except ValueError:
+        return Response({'error': 'volume must be 1 or 2'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        root = NCCNode.objects.get(volume=volume_int, is_root=True)
+    except NCCNode.DoesNotExist:
+        return Response({'error': f'No root node found for volume {volume_int}'},
+                        status=status.HTTP_404_NOT_FOUND)
+
+    serializer = NCCNodeSerializer(root)
+    return Response(serializer.data)

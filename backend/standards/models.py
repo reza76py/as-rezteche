@@ -58,3 +58,40 @@ class ComplianceRule(models.Model):
 
     def __str__(self):
         return f"{self.standard.code} - {self.requirement[:60]}"
+
+
+class NCCNode(models.Model):
+    """
+    Represents a single node in the NCC Volume One or Two tree.
+    Uses a self-referencing parent to build the full tree hierarchy.
+    """
+    VOLUME_CHOICES = [
+        (1, 'Volume One'),
+        (2, 'Volume Two'),
+    ]
+
+    node_id   = models.CharField(max_length=50, unique=True)          # e.g. 'F2', 'F2-D', 'F2-AS1'
+    title     = models.CharField(max_length=200)                       # e.g. 'Part F2'
+    subtitle  = models.CharField(max_length=200, blank=True)           # e.g. 'Wet areas'
+    color     = models.CharField(max_length=20, default='#6366F1')     # hex color
+    volume    = models.IntegerField(choices=VOLUME_CHOICES, default=1)
+    parent    = models.ForeignKey(
+                    'self',
+                    null=True,
+                    blank=True,
+                    on_delete=models.CASCADE,
+                    related_name='children'
+                )
+    order     = models.IntegerField(default=0)                         # display order among siblings
+    desc      = models.TextField(blank=True)                           # optional description
+    standard  = models.CharField(max_length=200, blank=True)           # e.g. 'AS 3740, AS 2588'
+    bss       = models.BooleanField(default=False)                     # BSS role relevant flag
+    is_root   = models.BooleanField(default=False)                     # marks the root node per volume
+
+    class Meta:
+        ordering = ['volume', 'order']
+        verbose_name = 'NCC Node'
+        verbose_name_plural = 'NCC Nodes'
+
+    def __str__(self):
+        return f"Vol {self.volume} | {self.node_id} — {self.title}"
