@@ -92,6 +92,11 @@ CORS_ALLOWED_ORIGINS = [
     'https://www.as.rezteche.com',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://as.rezteche.com',
+    'https://www.as.rezteche.com',
+]
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
