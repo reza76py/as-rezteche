@@ -23,19 +23,43 @@ VOLUME_ONE = {
             "subtitle": "Governing requirements",
             "color": "#6366F1",
             "children": [
-                {'id': 'A1', 'title': 'Part A1', 'subtitle': 'Interpreting the NCC', 'color': '#6366F1', 'children': [
-    {'id': 'A1-O', 'title': 'A1O1', 'subtitle': 'Objective', 'color': '#6366F1'},
-    {'id': 'A1-P', 'title': 'A1P1', 'subtitle': 'Performance requirement', 'color': '#6366F1'},
-    {'id': 'A1-D', 'title': 'A1D1', 'subtitle': 'DTS solution', 'color': '#6366F1'},
-    {'id': 'A1G1', 'title': 'A1G1', 'subtitle': 'Scope of Volume One', 'color': '#6366F1',
-     'desc': 'Volume One applies to all Class 2–9 buildings, disability access in Class 1b and 10a buildings, and certain Class 10b structures including accessible swimming pools.'},
-    {'id': 'A1G2', 'title': 'A1G2', 'subtitle': 'Scope of Volume Two', 'color': '#6366F1',
-     'desc': 'Volume Two applies to Class 1 and 10a buildings, certain Class 10b structures, and Class 10c private bushfire shelters.'},
-    {'id': 'A1G3', 'title': 'A1G3', 'subtitle': 'Scope of Volume Three', 'color': '#6366F1',
-     'desc': 'Volume Three covers plumbing and drainage systems in all building classes, applying from point of connection to point of discharge.'},
-    {'id': 'A1G4', 'title': 'A1G4', 'subtitle': 'Interpretation', 'color': '#6366F1',
-     'desc': 'Explains how to read the NCC — italicised words use Schedule 1 definitions, explanatory information is non-mandatory, and Application/Limitation/Exemption statements are mandatory.'},
-]},
+                {
+                    "id": "A1",
+                    "title": "Part A1",
+                    "subtitle": "Interpreting the NCC",
+                    "color": "#6366F1",
+                    "children": [
+                        
+                        {
+                            "id": "A1G1",
+                            "title": "A1G1",
+                            "subtitle": "Scope of Volume One",
+                            "color": "#6366F1",
+                            "desc": "Volume One applies to all Class 2–9 buildings, disability access in Class 1b and 10a buildings, and certain Class 10b structures including accessible swimming pools.",
+                        },
+                        {
+                            "id": "A1G2",
+                            "title": "A1G2",
+                            "subtitle": "Scope of Volume Two",
+                            "color": "#6366F1",
+                            "desc": "Volume Two applies to Class 1 and 10a buildings, certain Class 10b structures, and Class 10c private bushfire shelters.",
+                        },
+                        {
+                            "id": "A1G3",
+                            "title": "A1G3",
+                            "subtitle": "Scope of Volume Three",
+                            "color": "#6366F1",
+                            "desc": "Volume Three covers plumbing and drainage systems in all building classes, applying from point of connection to point of discharge.",
+                        },
+                        {
+                            "id": "A1G4",
+                            "title": "A1G4",
+                            "subtitle": "Interpretation",
+                            "color": "#6366F1",
+                            "desc": "Explains how to read the NCC — italicised words use Schedule 1 definitions, explanatory information is non-mandatory, and Application/Limitation/Exemption statements are mandatory.",
+                        },
+                    ],
+                },
                 {
                     "id": "A2",
                     "title": "Part A2",
