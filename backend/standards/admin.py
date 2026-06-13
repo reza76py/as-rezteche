@@ -2,8 +2,6 @@ from django.contrib import admin
 from .models import Standard, BuildingClass, RoomType, ProductCategory, ComplianceRule, NCCNode
 
 
-# ── Existing models ───────────────────────────────────────────────────────────
-
 @admin.register(Standard)
 class StandardAdmin(admin.ModelAdmin):
     list_display = ['code', 'title', 'priority']
@@ -36,8 +34,6 @@ class ComplianceRuleAdmin(admin.ModelAdmin):
     filter_horizontal = ['building_classes', 'room_types', 'product_categories']
 
 
-# ── NCC Node ─────────────────────────────────────────────────────────────────
-
 @admin.register(NCCNode)
 class NCCNodeAdmin(admin.ModelAdmin):
     list_display  = ['node_id', 'title', 'subtitle', 'volume', 'parent', 'order', 'bss', 'is_root']
@@ -45,6 +41,7 @@ class NCCNodeAdmin(admin.ModelAdmin):
     search_fields = ['node_id', 'title', 'subtitle', 'desc', 'standard']
     ordering      = ['volume', 'order']
     list_editable = ['order']
+    autocomplete_fields = ['parent']
 
     fieldsets = (
         ('Identity', {
@@ -54,13 +51,9 @@ class NCCNodeAdmin(admin.ModelAdmin):
             'fields': ('volume', 'parent', 'order', 'is_root')
         }),
         ('Content', {
-            'fields': ('desc', 'standard', 'bss')
+            'fields': ('desc', 'example', 'photo_url', 'why')
+        }),
+        ('Metadata', {
+            'fields': ('standard', 'bss')
         }),
     )
-
-    # Show parent as a searchable dropdown
-    autocomplete_fields = ['parent']
-
-    def get_search_results(self, request, queryset, search_term):
-        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
-        return queryset, use_distinct

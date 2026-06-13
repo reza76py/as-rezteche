@@ -84,6 +84,13 @@ class NCCNode(models.Model):
                 )
     order     = models.IntegerField(default=0)                         # display order among siblings
     desc      = models.TextField(blank=True)                           # optional description
+    # ── 4-layer content ───────────────────────────────────────────────────────
+    desc      = models.TextField(blank=True)          # plain English summary
+    example   = models.TextField(blank=True)          # real world example
+    photo_url = models.URLField(max_length=500, blank=True)  # illustrative image
+    why       = models.TextField(blank=True)          # why this rule exists
+ 
+    # ── Metadata ──────────────────────────────────────────────────────────────
     standard  = models.CharField(max_length=200, blank=True)           # e.g. 'AS 3740, AS 2588'
     bss       = models.BooleanField(default=False)                     # BSS role relevant flag
     is_root   = models.BooleanField(default=False)                     # marks the root node per volume

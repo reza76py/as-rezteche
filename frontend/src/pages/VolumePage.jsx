@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Search, X } from 'lucide-react'
+import { Search, X, BookOpen, Hammer, Image, Lightbulb } from 'lucide-react'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
@@ -10,8 +10,6 @@ const fadeSlideIn = {
 // ─── Search helpers ───────────────────────────────────────────────────────────
 
 function collectAllNodes(node, ancestorPath = [], results = []) {
-  const currentPath = (!node.children || node.node_id === node.node_id) ? [...ancestorPath, node.node_id] : []
-  // root nodes have no parent so path starts fresh
   const isRoot = !ancestorPath.length || node.is_root
   const path = isRoot ? [] : [...ancestorPath, node.node_id]
   results.push({ node, path: isRoot ? [] : path })
@@ -25,7 +23,7 @@ function collectAllNodes(node, ancestorPath = [], results = []) {
 function nodeMatches(node, query) {
   const q = query.toLowerCase().trim()
   if (!q) return false
-  const fields = [node.title, node.subtitle, node.standard, node.desc]
+  const fields = [node.title, node.subtitle, node.standard, node.desc, node.example, node.why]
     .filter(Boolean).map(f => f.toLowerCase())
   return fields.some(f => f.includes(q))
 }
@@ -34,15 +32,8 @@ function searchTrees(query, treeV1, treeV2) {
   if (!query.trim()) return []
   const v1Nodes = treeV1 ? collectAllNodes(treeV1) : []
   const v2Nodes = treeV2 ? collectAllNodes(treeV2) : []
-
-  const v1Results = v1Nodes
-    .filter(({ node }) => nodeMatches(node, query))
-    .map(({ node, path }) => ({ node, path, volume: 1, volumeTree: treeV1 }))
-
-  const v2Results = v2Nodes
-    .filter(({ node }) => nodeMatches(node, query))
-    .map(({ node, path }) => ({ node, path, volume: 2, volumeTree: treeV2 }))
-
+  const v1Results = v1Nodes.filter(({ node }) => nodeMatches(node, query)).map(({ node, path }) => ({ node, path, volume: 1, volumeTree: treeV1 }))
+  const v2Results = v2Nodes.filter(({ node }) => nodeMatches(node, query)).map(({ node, path }) => ({ node, path, volume: 2, volumeTree: treeV2 }))
   return [...v1Results, ...v2Results].slice(0, 12)
 }
 
@@ -56,8 +47,6 @@ function buildBreadcrumbs(path, rootTree) {
   })
   return labels
 }
-
-// ─── Tree traversal helpers ──────────────────────────────────────────────────
 
 function getNodeAtPath(path, rootTree) {
   if (!rootTree) return null
@@ -74,7 +63,106 @@ function getAllNodes(node, depth = 0, result = []) {
   return result
 }
 
-// ─── Components ──────────────────────────────────────────────────────────────
+// ─── Detail Panel ─────────────────────────────────────────────────────────────
+
+function DetailPanel({ node, onClose }) {
+  if (!node) return null
+  const hasContent = node.desc || node.example || node.photo_url || node.why
+
+  return (
+    <div style={{ animation: 'fadeSlideIn 0.3s ease forwards' }}
+      className="w-full max-w-2xl mx-auto mt-4 bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden">
+
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700"
+        style={{ backgroundColor: node.color + '15' }}>
+        <div>
+          <p className="text-sm font-bold" style={{ color: node.color }}>{node.title}</p>
+          <p className="text-xs text-slate-400 mt-0.5">{node.subtitle}</p>
+          {node.standard && (
+            <p className="text-xs mt-1" style={{ color: '#06b6d4' }}>Standard: {node.standard}</p>
+          )}
+        </div>
+        <button onClick={onClose}
+          className="text-slate-500 hover:text-white transition-colors"
+          style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+          <X size={16} />
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="p-5 flex flex-col gap-4">
+        {!hasContent && (
+          <p className="text-xs text-slate-500 text-center py-4">No detail content yet for this node.</p>
+        )}
+
+        {/* Plain English Summary */}
+        {node.desc && (
+          <div className="flex gap-3">
+            <div className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center"
+              style={{ backgroundColor: '#6366F122', border: '1px solid #6366F144' }}>
+              <BookOpen size={13} color="#6366F1" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-300 mb-1">What it means</p>
+              <p className="text-xs text-slate-400 leading-relaxed">{node.desc}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Real World Example */}
+        {node.example && (
+          <div className="flex gap-3">
+            <div className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center"
+              style={{ backgroundColor: '#1D9E7522', border: '1px solid #1D9E7544' }}>
+              <Hammer size={13} color="#1D9E75" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-300 mb-1">Real world example</p>
+              <p className="text-xs text-slate-400 leading-relaxed">{node.example}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Photo */}
+        {node.photo_url && (
+          <div className="flex gap-3">
+            <div className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center"
+              style={{ backgroundColor: '#06b6d422', border: '1px solid #06b6d444' }}>
+              <Image size={13} color="#06b6d4" />
+            </div>
+            <div className="w-full">
+              <p className="text-xs font-semibold text-slate-300 mb-2">Visual reference</p>
+              <img
+                src={node.photo_url}
+                alt={node.title}
+                className="w-full rounded-xl object-cover"
+                style={{ maxHeight: '200px', border: '1px solid #334155' }}
+                onError={e => e.target.style.display = 'none'}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Why this rule exists */}
+        {node.why && (
+          <div className="flex gap-3">
+            <div className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center"
+              style={{ backgroundColor: '#BA751722', border: '1px solid #BA751744' }}>
+              <Lightbulb size={13} color="#BA7517" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-300 mb-1">Why this rule exists</p>
+              <p className="text-xs text-slate-400 leading-relaxed">{node.why}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── MiniMap ──────────────────────────────────────────────────────────────────
 
 function MiniMap({ path, onNavigate, rootTree }) {
   if (!rootTree) return null
@@ -85,7 +173,6 @@ function MiniMap({ path, onNavigate, rootTree }) {
       return { id, label: found?.title || id, color: found?.color || rootTree.color }
     })
   ]
-
   return (
     <div className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 mb-6">
       <p style={{fontSize: '9px', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px', fontWeight: 500}}>
@@ -95,17 +182,10 @@ function MiniMap({ path, onNavigate, rootTree }) {
         {pathNodes.map((node, i) => (
           <div key={node.id} className="flex items-center gap-1">
             {i > 0 && <span style={{fontSize: '10px', color: '#475569'}}>→</span>}
-            <button
-              onClick={() => onNavigate(i)}
+            <button onClick={() => onNavigate(i)}
               className="rounded-lg px-2 py-1 transition-all hover:opacity-80"
-              style={{
-                backgroundColor: node.color + '22',
-                border: `1px solid ${node.color + '66'}`,
-              }}
-            >
-              <p style={{fontSize: '10px', color: node.color, fontWeight: 500, lineHeight: 1.3}}>
-                {node.label}
-              </p>
+              style={{ backgroundColor: node.color + '22', border: `1px solid ${node.color + '66'}` }}>
+              <p style={{fontSize: '10px', color: node.color, fontWeight: 500, lineHeight: 1.3}}>{node.label}</p>
             </button>
           </div>
         ))}
@@ -114,20 +194,25 @@ function MiniMap({ path, onNavigate, rootTree }) {
   )
 }
 
-function NodeBox({ node, onClick, selected, dimmed }) {
+// ─── NodeBox ──────────────────────────────────────────────────────────────────
+
+function NodeBox({ node, onClick, selected, dimmed, hasDetail }) {
+  const isLeaf = !node.children?.length
+  const clickable = !dimmed && (node.children?.length || hasDetail)
+
   return (
     <button
       onClick={() => onClick(node)}
-      disabled={dimmed || !node.children?.length}
+      disabled={dimmed}
       className="flex flex-col items-center justify-center rounded-xl border-2 px-2 py-2 min-w-0 w-full"
-      onMouseEnter={e => { if (!dimmed) e.currentTarget.style.transform = 'scale(1.04)' }}
+      onMouseEnter={e => { if (clickable) e.currentTarget.style.transform = 'scale(1.04)' }}
       onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
       style={{
         borderColor: selected ? node.color : dimmed ? '#1e293b' : '#334155',
         backgroundColor: selected ? node.color + '22' : dimmed ? '#0a0f1a' : '#0f172a',
         opacity: dimmed ? 0.25 : 1,
         minHeight: '64px',
-        cursor: (dimmed || !node.children?.length) ? 'default' : 'pointer',
+        cursor: dimmed ? 'default' : 'pointer',
         transition: 'all 0.2s ease',
         animation: selected ? 'pulse 2s ease-in-out infinite' : undefined,
       }}
@@ -141,11 +226,14 @@ function NodeBox({ node, onClick, selected, dimmed }) {
       {node.standard && !dimmed && (
         <span className="mt-0.5" style={{fontSize: '9px', color: '#06b6d4'}}>{node.standard}</span>
       )}
+      {isLeaf && hasDetail && !dimmed && (
+        <span className="mt-1" style={{fontSize: '8px', color: '#475569'}}>tap for detail</span>
+      )}
     </button>
   )
 }
 
-// ─── Search UI ────────────────────────────────────────────────────────────────
+// ─── Search Bar ───────────────────────────────────────────────────────────────
 
 function SearchBar({ onNavigateToResult, treeV1, treeV2 }) {
   const [query, setQuery] = useState('')
@@ -156,8 +244,7 @@ function SearchBar({ onNavigateToResult, treeV1, treeV2 }) {
 
   useEffect(() => {
     if (query.trim().length >= 2) {
-      const found = searchTrees(query, treeV1, treeV2)
-      setResults(found)
+      setResults(searchTrees(query, treeV1, treeV2))
       setOpen(true)
     } else {
       setResults([])
@@ -173,12 +260,6 @@ function SearchBar({ onNavigateToResult, treeV1, treeV2 }) {
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  const handleSelect = (result) => {
-    onNavigateToResult(result)
-    setQuery('')
-    setOpen(false)
-  }
-
   return (
     <div ref={containerRef} style={{ position: 'relative', width: '100%', maxWidth: '480px' }}>
       <div style={{
@@ -187,10 +268,7 @@ function SearchBar({ onNavigateToResult, treeV1, treeV2 }) {
         borderRadius: '10px', padding: '8px 12px',
       }}>
         <Search size={14} color="#475569" style={{ flexShrink: 0 }} />
-        <input
-          ref={inputRef}
-          value={query}
-          onChange={e => setQuery(e.target.value)}
+        <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)}
           placeholder="Search by keyword, AS number or section…"
           style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#e2e8f0', fontSize: '13px' }}
         />
@@ -224,7 +302,7 @@ function SearchBar({ onNavigateToResult, treeV1, treeV2 }) {
                 const breadcrumbs = buildBreadcrumbs(result.path, result.volumeTree)
                 const volColor = result.volume === 1 ? '#6366F1' : '#06b6d4'
                 return (
-                  <button key={i} onClick={() => handleSelect(result)}
+                  <button key={i} onClick={() => { onNavigateToResult(result); setQuery(''); setOpen(false) }}
                     style={{
                       display: 'block', width: '100%', textAlign: 'left',
                       padding: '10px 12px', background: 'none', border: 'none',
@@ -271,8 +349,8 @@ export default function VolumePage() {
   const [treeV2, setTreeV2] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [selectedNode, setSelectedNode] = useState(null)
 
-  // Fetch both trees on mount
   useEffect(() => {
     const fetchTrees = async () => {
       try {
@@ -303,6 +381,7 @@ export default function VolumePage() {
   const handleVolumeChange = (vol) => {
     setActiveVolume(vol)
     setPath([])
+    setSelectedNode(null)
   }
 
   const currentTree = activeVolume === 1 ? treeV1 : treeV2
@@ -310,25 +389,61 @@ export default function VolumePage() {
   const displayChildren = displayNode?.children || []
   const nextSelectedId = displayChildren.find(c => path.includes(c.node_id))?.node_id || null
 
+  const nodeHasDetail = (node) => !!(node.desc || node.example || node.photo_url || node.why)
+
   const handleClick = (node) => {
-    if (!node.children?.length) return
-    const idx = path.indexOf(node.node_id)
-    if (idx >= 0) {
-      setPath(path.slice(0, idx))
-    } else {
-      setPath([...path, node.node_id])
+    setSelectedNode(null)
+    if (node.children?.length) {
+      // navigate deeper
+      const idx = path.indexOf(node.node_id)
+      if (idx >= 0) {
+        setPath(path.slice(0, idx))
+      } else {
+        setPath([...path, node.node_id])
+      }
+    } else if (nodeHasDetail(node)) {
+      // show detail panel
+      setSelectedNode(node)
     }
   }
 
-  const goBack = () => setPath(path.slice(0, -1))
+  const goBack = () => {
+    setPath(path.slice(0, -1))
+    setSelectedNode(null)
+  }
 
   const handleNavigateToResult = (result) => {
     setActiveVolume(result.volume)
+    setSelectedNode(null)
     const targetPath = result.node.children?.length
       ? result.path
       : result.path.slice(0, -1)
     setPath(targetPath)
   }
+
+  const renderGrid = (nodes, selectedId) => (
+    <div className="grid" style={{
+      gridTemplateColumns: `repeat(${Math.min(nodes.length, isMobile ? 2 : 5)}, 1fr)`,
+      gap: '8px',
+    }}>
+      {nodes.map(child => {
+        const isSelected = selectedId === child.node_id
+        const isDimmed = selectedId !== null && selectedId !== child.node_id
+        return (
+          <div key={child.node_id} className="flex flex-col items-center">
+            <div className="w-0.5 h-6 bg-slate-600" />
+            <NodeBox
+              node={child}
+              onClick={handleClick}
+              selected={isSelected}
+              dimmed={isDimmed}
+              hasDetail={nodeHasDetail(child)}
+            />
+          </div>
+        )
+      })}
+    </div>
+  )
 
   return (
     <>
@@ -350,11 +465,7 @@ export default function VolumePage() {
           <h1 className="text-3xl font-bold text-white mb-4">
             {activeVolume === 1 ? 'Volume One' : 'Volume Two'}
           </h1>
-          <SearchBar
-            onNavigateToResult={handleNavigateToResult}
-            treeV1={treeV1}
-            treeV2={treeV2}
-          />
+          <SearchBar onNavigateToResult={handleNavigateToResult} treeV1={treeV1} treeV2={treeV2} />
         </div>
 
         <div className="flex gap-3 mb-6">
@@ -372,26 +483,23 @@ export default function VolumePage() {
           ))}
         </div>
 
-        {/* Loading state */}
         {loading && (
           <div className="flex items-center justify-center py-24">
             <div style={{ color: '#475569', fontSize: '14px' }}>Loading NCC tree…</div>
           </div>
         )}
 
-        {/* Error state */}
         {error && (
           <div className="bg-red-900/20 border border-red-700 rounded-xl p-4 mb-6">
             <p style={{ color: '#f87171', fontSize: '13px' }}>Failed to load tree: {error}</p>
           </div>
         )}
 
-        {/* Tree */}
         {!loading && !error && currentTree && (
           <>
             <MiniMap
               path={path}
-              onNavigate={(index) => setPath(path.slice(0, index))}
+              onNavigate={(index) => { setPath(path.slice(0, index)); setSelectedNode(null) }}
               rootTree={currentTree}
             />
 
@@ -411,15 +519,6 @@ export default function VolumePage() {
                 </div>
               )}
 
-              {displayNode?.desc && (
-                <div className="w-full max-w-lg bg-slate-800 border border-slate-700 rounded-xl p-4 mb-2 text-center">
-                  <p className="text-xs text-slate-300 leading-relaxed">{displayNode.desc}</p>
-                  {displayNode.standard && (
-                    <p className="text-xs text-accent font-medium mt-2">Standard: {displayNode.standard}</p>
-                  )}
-                </div>
-              )}
-
               {displayChildren.length > 0 && (
                 <>
                   <div className="w-0.5 h-6 bg-slate-600" />
@@ -432,21 +531,7 @@ export default function VolumePage() {
                       }} />
                     )}
                     <div style={fadeSlideIn}>
-                      <div className="grid pt-0" style={{
-                        gridTemplateColumns: `repeat(${Math.min(displayChildren.length, isMobile ? 2 : 5)}, 1fr)`,
-                        gap: '8px',
-                      }}>
-                        {displayChildren.map(child => {
-                          const isSelected = nextSelectedId === child.node_id
-                          const isDimmed = nextSelectedId !== null && nextSelectedId !== child.node_id
-                          return (
-                            <div key={child.node_id} className="flex flex-col items-center">
-                              <div className="w-0.5 h-6 bg-slate-600" />
-                              <NodeBox node={child} onClick={handleClick} selected={isSelected} dimmed={isDimmed} />
-                            </div>
-                          )
-                        })}
-                      </div>
+                      {renderGrid(displayChildren, nextSelectedId)}
                     </div>
                   </div>
 
@@ -460,27 +545,21 @@ export default function VolumePage() {
                         <div className="w-0.5 h-6 bg-slate-600 mt-2" />
                         <div className="relative w-full">
                           <div style={fadeSlideIn}>
-                            <div className="grid" style={{
-                              gridTemplateColumns: `repeat(${Math.min(grandchildren.length, isMobile ? 2 : 5)}, 1fr)`,
-                              gap: '8px',
-                            }}>
-                              {grandchildren.map(gc => {
-                                const isSelected = nextNextId === gc.node_id
-                                const isDimmed = nextNextId !== null && nextNextId !== gc.node_id
-                                return (
-                                  <div key={gc.node_id} className="flex flex-col items-center">
-                                    <div className="w-0.5 h-6 bg-slate-600" />
-                                    <NodeBox node={gc} onClick={handleClick} selected={isSelected} dimmed={isDimmed} />
-                                  </div>
-                                )
-                              })}
-                            </div>
+                            {renderGrid(grandchildren, nextNextId)}
                           </div>
                         </div>
                       </>
                     )
                   })()}
                 </>
+              )}
+
+              {/* Detail panel for leaf nodes */}
+              {selectedNode && (
+                <DetailPanel
+                  node={selectedNode}
+                  onClose={() => setSelectedNode(null)}
+                />
               )}
             </div>
           </>
