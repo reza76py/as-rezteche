@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Search, X, BookOpen, Hammer, Image, Lightbulb } from 'lucide-react'
+import { B1V1Calculator, RValueCalculator, WindowRatioCalculator, DaylightFactorCalculator, RwCalculator } from '../calculators'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
@@ -63,11 +64,22 @@ function getAllNodes(node, depth = 0, result = []) {
   return result
 }
 
+// ─── Calculator router ────────────────────────────────────────────────────────
+
+function NodeCalculator({ type }) {
+  if (type === 'b1v1') return <B1V1Calculator />
+  if (type === 'r_value') return <RValueCalculator />
+  if (type === 'window_ratio') return <WindowRatioCalculator />
+  if (type === 'daylight_factor') return <DaylightFactorCalculator />
+  if (type === 'rw_checker') return <RwCalculator />
+  return null
+}
+
 // ─── Detail Panel ─────────────────────────────────────────────────────────────
 
 function DetailPanel({ node, onClose }) {
   if (!node) return null
-  const hasContent = node.desc || node.example || node.photo_url || node.why
+  const hasContent = node.desc || node.example || node.photo_url || node.why || node.calculator_type
 
   return (
     <div style={{ animation: 'fadeSlideIn 0.3s ease forwards' }}
@@ -157,6 +169,9 @@ function DetailPanel({ node, onClose }) {
             </div>
           </div>
         )}
+
+        {/* Embedded calculator */}
+        {node.calculator_type && <NodeCalculator type={node.calculator_type} />}
       </div>
     </div>
   )

@@ -1,0 +1,192 @@
+SECTION_A = {
+    "id": "A",
+    "title": "Section A",
+    "subtitle": "Governing requirements",
+    "color": "#6366F1",
+    "children": [
+        {
+            "id": "A1",
+            "title": "Part A1",
+            "subtitle": "Interpreting the NCC",
+            "color": "#6366F1",
+            "children": [
+                {
+                    "id": "A1G1",
+                    "title": "A1G1",
+                    "subtitle": "Scope of Volume One",
+                    "color": "#6366F1",
+                    "desc": "Volume One applies to all Class 2–9 buildings, disability access in Class 1b and 10a buildings, and certain Class 10b structures including accessible swimming pools.",
+                },
+                {
+                    "id": "A1G2",
+                    "title": "A1G2",
+                    "subtitle": "Scope of Volume Two",
+                    "color": "#6366F1",
+                    "desc": "Volume Two applies to Class 1 and 10a buildings, certain Class 10b structures, and Class 10c private bushfire shelters.",
+                },
+                {
+                    "id": "A1G3",
+                    "title": "A1G3",
+                    "subtitle": "Scope of Volume Three",
+                    "color": "#6366F1",
+                    "desc": "Volume Three covers plumbing and drainage systems in all building classes, applying from point of connection to point of discharge.",
+                },
+                {
+                    "id": "A1G4",
+                    "title": "A1G4",
+                    "subtitle": "Interpretation",
+                    "color": "#6366F1",
+                    "desc": "Explains how to read the NCC — italicised words use Schedule 1 definitions, explanatory information is non-mandatory, and Application/Limitation/Exemption statements are mandatory.",
+                },
+            ],
+        },
+        {
+            "id": "A2",
+            "title": "Part A2",
+            "subtitle": "Compliance with the NCC",
+            "color": "#6366F1",
+            "children": [
+                {
+                    "id": "A2-O",
+                    "title": "A2O1",
+                    "subtitle": "Objective",
+                    "color": "#6366F1",
+                },
+                {
+                    "id": "A2-P",
+                    "title": "A2P1",
+                    "subtitle": "Performance requirement",
+                    "color": "#6366F1",
+                },
+                {
+                    "id": "A2-D",
+                    "title": "A2D1",
+                    "subtitle": "DTS solution",
+                    "color": "#6366F1",
+                },
+                {
+                    "id": "A2-G4",
+                    "title": "A2G4",
+                    "subtitle": "Combination of solutions",
+                    "color": "#6366F1",
+                },
+            ],
+        },
+        {
+            "id": "A3",
+            "title": "Part A3",
+            "subtitle": "Application of the NCC in States and Territories",
+            "color": "#6366F1",
+            "children": [
+                {
+                    "id": "A3-O",
+                    "title": "A3O1",
+                    "subtitle": "Objective",
+                    "color": "#6366F1",
+                },
+                {
+                    "id": "A3-D",
+                    "title": "A3D1",
+                    "subtitle": "DTS solution",
+                    "color": "#6366F1",
+                },
+            ],
+        },
+        {
+            "id": "A4",
+            "title": "Part A4",
+            "subtitle": "Referenced documents",
+            "color": "#6366F1",
+            "children": [
+                {
+                    "id": "A4-O",
+                    "title": "A4O1",
+                    "subtitle": "Objective",
+                    "color": "#6366F1",
+                },
+                {
+                    "id": "A4-D",
+                    "title": "A4D1",
+                    "subtitle": "DTS solution",
+                    "color": "#6366F1",
+                    "desc": "Lists all Australian Standards and other documents referenced throughout NCC Volume One. A referenced document becomes part of the NCC to the extent it is called up.",
+                },
+            ],
+        },
+        {
+            "id": "A5",
+            "title": "Part A5",
+            "subtitle": "Documentation of design and construction",
+            "color": "#6366F1",
+            "children": [
+                {
+                    "id": "A5-O",
+                    "title": "A5O1",
+                    "subtitle": "Objective",
+                    "color": "#6366F1",
+                },
+                {
+                    "id": "A5-D",
+                    "title": "A5D1",
+                    "subtitle": "DTS solution",
+                    "color": "#6366F1",
+                    "desc": "Requires documentation of all design decisions and construction methods. Evidence of suitability must be kept for all products and systems used.",
+                },
+            ],
+        },
+        {
+            "id": "A6",
+            "title": "Part A6",
+            "subtitle": "Building classification",
+            "color": "#6366F1",
+            "bss": True,
+            "children": [
+                {
+                    "id": "A6-O",
+                    "title": "A6O1",
+                    "subtitle": "Objective",
+                    "color": "#6366F1",
+                },
+                {
+                    "id": "A6-F",
+                    "title": "A6F1",
+                    "subtitle": "Functional statement",
+                    "color": "#6366F1",
+                },
+                {
+                    "id": "A6-P",
+                    "title": "A6P1",
+                    "subtitle": "Performance requirement",
+                    "color": "#6366F1",
+                },
+                {
+                    "id": "A6-D",
+                    "title": "A6D1",
+                    "subtitle": "DTS → Classes 1-10",
+                    "color": "#6366F1",
+                },
+            ],
+        },
+        {
+            "id": "A7",
+            "title": "Part A7",
+            "subtitle": "United buildings",
+            "color": "#6366F1",
+            "children": [
+                {
+                    "id": "A7-O",
+                    "title": "A7O1",
+                    "subtitle": "Objective",
+                    "color": "#6366F1",
+                },
+                {
+                    "id": "A7-D",
+                    "title": "A7D1",
+                    "subtitle": "DTS solution",
+                    "color": "#6366F1",
+                    "desc": "Applies when two or more buildings are united into one. The combined building must comply with the NCC as if it were a single building of the most demanding class.",
+                },
+            ],
+        },
+    ],
+}

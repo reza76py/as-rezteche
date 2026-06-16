@@ -63,37 +63,47 @@ class ComplianceRule(models.Model):
 class NCCNode(models.Model):
     """
     Represents a single node in the NCC Volume One or Two tree.
-    Uses a self-referencing parent to build the full tree hierarchy.
+
+    Content layers:
+      desc            — plain English summary
+      example         — real world practical scenario
+      photo_url       — URL to an illustrative image
+      why             — one sentence on why this rule exists
+      calculator_type — if set, renders an embedded calculator
+                        (e.g. 'b1v1', 'r_value', 'window_ratio')
     """
     VOLUME_CHOICES = [
         (1, 'Volume One'),
         (2, 'Volume Two'),
     ]
 
-    node_id   = models.CharField(max_length=50, unique=True)          # e.g. 'F2', 'F2-D', 'F2-AS1'
-    title     = models.CharField(max_length=200)                       # e.g. 'Part F2'
-    subtitle  = models.CharField(max_length=200, blank=True)           # e.g. 'Wet areas'
-    color     = models.CharField(max_length=20, default='#6366F1')     # hex color
-    volume    = models.IntegerField(choices=VOLUME_CHOICES, default=1)
-    parent    = models.ForeignKey(
-                    'self',
-                    null=True,
-                    blank=True,
-                    on_delete=models.CASCADE,
-                    related_name='children'
-                )
-    order     = models.IntegerField(default=0)                         # display order among siblings
-    desc      = models.TextField(blank=True)                           # optional description
-    # ── 4-layer content ───────────────────────────────────────────────────────
-    desc      = models.TextField(blank=True)          # plain English summary
-    example   = models.TextField(blank=True)          # real world example
-    photo_url = models.URLField(max_length=500, blank=True)  # illustrative image
-    why       = models.TextField(blank=True)          # why this rule exists
- 
-    # ── Metadata ──────────────────────────────────────────────────────────────
-    standard  = models.CharField(max_length=200, blank=True)           # e.g. 'AS 3740, AS 2588'
-    bss       = models.BooleanField(default=False)                     # BSS role relevant flag
-    is_root   = models.BooleanField(default=False)                     # marks the root node per volume
+    node_id         = models.CharField(max_length=50, unique=True)
+    title           = models.CharField(max_length=200)
+    subtitle        = models.CharField(max_length=200, blank=True)
+    color           = models.CharField(max_length=20, default='#6366F1')
+    volume          = models.IntegerField(choices=VOLUME_CHOICES, default=1)
+    parent          = models.ForeignKey(
+                          'self',
+                          null=True,
+                          blank=True,
+                          on_delete=models.CASCADE,
+                          related_name='children'
+                      )
+    order           = models.IntegerField(default=0)
+
+    # 4-layer content
+    desc            = models.TextField(blank=True)
+    example         = models.TextField(blank=True)
+    photo_url       = models.URLField(max_length=500, blank=True)
+    why             = models.TextField(blank=True)
+
+    # Calculator
+    calculator_type = models.CharField(max_length=50, blank=True)
+
+    # Metadata
+    standard        = models.CharField(max_length=200, blank=True)
+    bss             = models.BooleanField(default=False)
+    is_root         = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['volume', 'order']
