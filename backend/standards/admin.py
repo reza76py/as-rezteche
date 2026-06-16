@@ -51,7 +51,7 @@ class NCCNodeAdmin(admin.ModelAdmin):
             'fields': ('volume', 'parent', 'order', 'is_root')
         }),
         ('Content', {
-            'fields': ('desc', 'example', 'photo_url', 'why')
+            'fields': ('desc', 'example', 'photo_url', 'why', 'calculator_type')
         }),
         ('Metadata', {
             'fields': ('standard', 'bss')

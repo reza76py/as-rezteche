@@ -60,6 +60,7 @@ class NCCNodeSerializer(serializers.ModelSerializer):
             'example',
             'photo_url',
             'why',
+            'calculator_type',
             'standard',
             'bss',
             'children',
